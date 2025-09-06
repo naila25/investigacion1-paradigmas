@@ -1,21 +1,24 @@
 import asyncio
 
-#Definimos un Actor genérico
+#aqui definimos un Actor genérico
 class Actor:
     def __init__(self, name, inbox):
+        # cada actor tiene un nombre y un buzón 
         self.name = name
         self.inbox = inbox  # Cola de mensajes
 
+#funcion para enviar mensaje a otro actor
     async def send(self, message, other_actor):
         await other_actor.inbox.put(message)
 
+#función para recibir mensaje 
     async def receive(self):
         message = await self.inbox.get()
         return message
 
 
 async def main():
-    # Creamos dos colas para los actores
+    # Creamos dos colas para los actores (cada actor tiene su buzón)
     inbox1 = asyncio.Queue()
     inbox2 = asyncio.Queue()
 
@@ -28,13 +31,13 @@ async def main():
     while True:
         # Actor1 envía mensaje a Actor2
         msg1 = input("Actor1: ")
-        await actor1.send(msg1, actor2)
+        await actor1.send(msg1, actor2) # se envia al buzon de actor2
 
         if msg1.lower() == "salir":
             print("Fin de la conversación.")
             break
 
-        # Actor2 recibe mensaje
+        # Actor2 recibe mensaje del actor1
         recibido1 = await actor2.receive()
         print(f"Actor2 recibió: {recibido1}")
 
@@ -46,10 +49,10 @@ async def main():
             print("Fin de la conversación.")
             break
 
-        # Actor1 recibe mensaje
+        # Actor1 recibe mensaje del actor2
         recibido2 = await actor1.receive()
         print(f"Actor1 recibió: {recibido2}")
 
 
 #Ejecutar el programa
-asyncio.run(main())
+asyncio.run(main()) # asyncio permite que ambos actores puedan enviar y recibir mensajes sin bloquearse
